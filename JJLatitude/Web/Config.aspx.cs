@@ -47,11 +47,8 @@ namespace HSPI_JJLATITUDE.Web
         }
       }
 
-      GridView1.DataSource = locations;
-      GridView1.DataBind();
-
-      DataList1.DataSource = locations;
-      DataList1.DataBind();
+      lstLocations.DataSource = locations;
+      lstLocations.DataBind();
 
       /*try
       {

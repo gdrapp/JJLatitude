@@ -4,6 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
+
     <title></title>
     <asp:Literal ID="litHSHeader" runat="server"></asp:Literal>
     <style type="text/css">
@@ -12,23 +13,14 @@
         width: 97px;
       }
     </style>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 </head>
 <body>
     <asp:Literal ID="litHSBody" runat="server"></asp:Literal>
     <form id="form1" runat="server">
-    <div style="border-width: 1px; border-style: solid;">    
-      <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" 
-        Visible="False">
-        <Columns>
-          <asp:BoundField DataField="Email" HeaderText="Email" />
-          <asp:BoundField DataField="Lat" HeaderText="Latitude" />
-          <asp:BoundField DataField="Lon" HeaderText="Longitude" />
-          <asp:BoundField DataField="Accuracy" HeaderText="Accuracy" />
-          <asp:BoundField DataField="Time" HeaderText="Time" />
-        </Columns>
-      </asp:GridView>
+    <div style="border-width: 0px; border-style: solid;">    
       <br />
-      <asp:DataList ID="DataList1" runat="server" BorderColor="#3366CC" 
+      <asp:DataList ID="lstLocations" runat="server" BorderColor="#3366CC" 
         BorderWidth="1px" CellPadding="4" GridLines="Both" 
         RepeatColumns="3" RepeatDirection="Horizontal" style="margin-right: 0px" 
         BackColor="White" BorderStyle="None">
@@ -40,23 +32,24 @@
             <asp:Label ID="lblName" runat="server" Text='<%# Eval("Name") %>'></asp:Label>
           </div>
           <br />
-          <asp:Image ID="Image1" runat="server" ImageUrl='<%# Eval("MapUrl") %>' />
+          <div id="map_canvas<%# Container.ItemIndex %>" style="width: 400px; height: 400px">
+          </div>
           <br />
-
-          <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"/>
-           
           <script type="text/javascript">
-            var latlng = new google.maps.LatLng(34.03, -118.14); //default view to Los Angeles area
+            var latlng = new google.maps.LatLng(<%# Eval("Lat") %>, <%# Eval("Lon") %>); //default view to Los Angeles area
             var myOptions = {
               zoom: 13,
               center: latlng,
               mapTypeId: google.maps.MapTypeId.ROADMAP
             };
-            map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+            map<%# Container.ItemIndex %> = new google.maps.Map(document.getElementById("map_canvas<%# Container.ItemIndex %>"), myOptions);
+            var marker<%# Container.ItemIndex %> = new google.maps.Marker({
+              position: latlng,
+              map: map<%# Container.ItemIndex %>
+            });
+            marker<%# Container.ItemIndex %>.setTitle("<%# Eval("Name") %>")
           </script>
-          <div ID="map_canvas" style="width: 400px; height: 400px">
-          </div>
-          <br />
+
           <table style="width:100%;">
             <tr>
               <td class="style1">
