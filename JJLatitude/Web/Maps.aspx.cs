@@ -7,10 +7,11 @@ using System.Web.Script.Serialization;
 using System.Collections.Generic;
 using HSPI_JJLATITUDE.Model;
 using System.Configuration;
+using System.Web.UI.WebControls;
 
 namespace HSPI_JJLATITUDE.Web
 {
-  public partial class Config : System.Web.UI.Page
+  public partial class Maps : System.Web.UI.Page
   {
     hsapplication homeSeerApp;
     HSPI plugin;
@@ -50,7 +51,7 @@ namespace HSPI_JJLATITUDE.Web
       lstLocations.DataSource = locations;
       lstLocations.DataBind();
 
-      /*try
+      try
       {
         homeSeerApp = (hsapplication)Context.Items["Content"];
 
@@ -72,13 +73,13 @@ namespace HSPI_JJLATITUDE.Web
       }
 
       // Inject HomeSeer HTML
-      litHSHeader.Text = GetHeadContent();
+      //litHSHeader.Text = GetHeadContent();
       litHSBody.Text = GetBodyContent();
-      litHSFooter.Text = GetFooterContent();
+      //litHSFooter.Text = GetFooterContent();
 
       if (!IsPostBack)
       {
-      }*/
+      }
     }
 
     private string GetHeadContent()
@@ -98,17 +99,17 @@ namespace HSPI_JJLATITUDE.Web
 
     private string GetBodyContent()
     {
-      string header = "";
+      string body = "";
 
       try
       {
-        header = homeSeerApp.GetPageHeader(App.PLUGIN_NAME, "", "", false, false, false, true, false);
+        body = homeSeerApp.GetPageHeader(App.PLUGIN_NAME, "", "", false, false, false, true, false);
       }
       catch
       {
 
       }
-      return header;
+      return body;
     }
 
     private string GetFooterContent()
@@ -123,6 +124,8 @@ namespace HSPI_JJLATITUDE.Web
       {
 
       }
+      footer = footer.Replace("</body>", "");
+      footer = footer.Replace("</html>", "");
       return footer;
     }
 

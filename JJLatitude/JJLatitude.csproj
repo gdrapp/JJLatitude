@@ -83,7 +83,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Web\AuthorizeToken.aspx" />
-    <Content Include="Web\Config.aspx" />
+    <Content Include="Web\Maps.aspx" />
     <Content Include="Global.asax" />
   </ItemGroup>
   <ItemGroup>
@@ -108,15 +108,15 @@
     <Compile Include="Web\AuthorizeToken.aspx.designer.cs">
       <DependentUpon>AuthorizeToken.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Web\Config.aspx.cs">
-      <DependentUpon>Config.aspx</DependentUpon>
+    <Compile Include="Web\Maps.aspx.cs">
+      <DependentUpon>Maps.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Web\Config.aspx.designer.cs">
-      <DependentUpon>Config.aspx</DependentUpon>
+    <Compile Include="Web\Maps.aspx.designer.cs">
+      <DependentUpon>Maps.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

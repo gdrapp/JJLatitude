@@ -10,7 +10,7 @@
 namespace HSPI_JJLATITUDE.Web {
     
     
-    public partial class Config {
+    public partial class Maps {
         
         /// <summary>
         /// litHSHeader control.
