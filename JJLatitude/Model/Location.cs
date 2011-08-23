@@ -7,6 +7,7 @@ namespace HSPI_JJLATITUDE.Model
 {
   public class Location
   {
+    public int TokenID { get; set; }
     public string Name { get; set; }
     public string Email { get; set; }
     public Decimal Lat { get; set; }

@@ -11,7 +11,22 @@
         width: 97px;
       }
     </style>
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
+    <script type="text/javascript">
+      function addLoadEvent(func) {
+        var oldonload = window.onload;
+        if (typeof window.onload != 'function') {
+          window.onload = func;
+        } else {
+          window.onload = function () {
+            if (oldonload) {
+              oldonload();
+            }
+            func();
+          }
+        }
+      }
+    </script>
 </head>
 <body>
     <asp:Literal ID="litHSBody" runat="server"></asp:Literal>
@@ -34,7 +49,8 @@
           </div>
           <br />
           <script type="text/javascript">
-            var latlng = new google.maps.LatLng(<%# Eval("Lat") %>, <%# Eval("Lon") %>); //default view to Los Angeles area
+          addLoadEvent(function() {
+            var latlng = new google.maps.LatLng(<%# Eval("Lat") %>, <%# Eval("Lon") %>);
             var myOptions = {
               zoom: 13,
               center: latlng,
@@ -46,6 +62,7 @@
               map: map<%# Container.ItemIndex %>
             });
             marker<%# Container.ItemIndex %>.setTitle("<%# Eval("Name") %>")
+          });
           </script>
 
           <table style="width:100%;">

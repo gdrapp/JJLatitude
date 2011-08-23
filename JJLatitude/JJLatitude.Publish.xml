@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<publishData>
+  <publishProfile publishUrl="C:\Documents and Settings\grapp\Desktop\JJLatitude" deleteExistingFiles="False" ftpAnonymousLogin="False" ftpPassiveMode="True" msdeploySite="" msdeploySiteID="" msdeployRemoteSitePhysicalPath="" msdeployAllowUntrustedCertificate="False" msdeploySkipExtraFilesOnServer="True" msdeployMarkAsApp="False" profileName="Folder" publishMethod="FileSystem" replaceMatchingFiles="True" userName="" savePWD="False" userPWD="" SelectedForPublish="True">
+    <file relUrl="Web.config" publishTime="08/20/2011 18:34:52" />
+    <file relUrl="bin/HS2Util.dll" publishTime="04/05/2011 09:06:20" />
+    <file relUrl="bin/Scheduler.dll" publishTime="06/04/2011 23:47:33" />
+    <file relUrl="packages.config" publishTime="08/05/2011 23:35:08" />
+    <file relUrl="Scripts/jquery-1.4.1.min.js" publishTime="07/16/2011 23:00:58" />
+    <file relUrl="Web/AuthorizeToken.aspx" publishTime="08/01/2011 23:24:26" />
+    <file relUrl="bin/HSPI_JJLatitude.dll" publishTime="08/20/2011 21:38:36" />
+    <file relUrl="Scripts/jquery-1.4.1.js" publishTime="07/16/2011 23:00:58" />
+    <file relUrl="bin/HSPI_JJLatitude.pdb" publishTime="08/20/2011 21:38:36" />
+    <file relUrl="Web/Maps.aspx" publishTime="08/20/2011 21:41:32" />
+    <file relUrl="bin/interop.dll" publishTime="04/19/2010 11:55:58" />
+    <file relUrl="Global.asax" publishTime="07/17/2011 12:21:17" />
+    <file relUrl="bin/HomeSeer2.dll" publishTime="08/11/2010 15:03:22" />
+    <file relUrl="Google.config" publishTime="08/06/2011 08:47:33" />
+    <file relUrl="App_Data/jjlatitude.mdb" publishTime="08/02/2011 21:03:35" />
+    <file relUrl="Scripts/jquery-1.4.1-vsdoc.js" publishTime="07/16/2011 23:00:58" />
+  </publishProfile>
+</publishData>

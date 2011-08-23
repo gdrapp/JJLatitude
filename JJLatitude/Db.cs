@@ -87,7 +87,7 @@ namespace HSPI_JJLATITUDE
 
       using (OleDbCommand command = connection.CreateCommand())
       {
-        command.CommandText = "SELECT name,email,token,secret FROM Tokens";
+        command.CommandText = "SELECT id,name,email,token,secret FROM Tokens";
         command.CommandType = CommandType.Text;
 
         try
@@ -97,10 +97,11 @@ namespace HSPI_JJLATITUDE
           while (result.Read())
           {
             Dictionary<string, string> tmpDict = new Dictionary<string, string>();
-            tmpDict.Add("name", result[0].ToString());
-            tmpDict.Add("email", result[1].ToString());
-            tmpDict.Add("token", result[2].ToString());
-            tmpDict.Add("secret", result[3].ToString());
+            tmpDict.Add("id", result[0].ToString());
+            tmpDict.Add("name", result[1].ToString());
+            tmpDict.Add("email", result[2].ToString());
+            tmpDict.Add("token", result[3].ToString());
+            tmpDict.Add("secret", result[4].ToString());
             tokens.Add(tmpDict);
           }
           result.Close();

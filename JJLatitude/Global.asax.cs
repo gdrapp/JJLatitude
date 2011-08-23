@@ -21,7 +21,7 @@ namespace HSPI_JJLATITUDE
         Belikov.GenuineChannels.GenuineTcp.GenuineTcpChannel channel = new Belikov.GenuineChannels.GenuineTcp.GenuineTcpChannel(props, null, null);
 
         System.Runtime.Remoting.Channels.ChannelServices.RegisterChannel(channel, false);
-        homeSeerApp = (Scheduler.hsapplication)Activator.GetObject(typeof(Scheduler.hsapplication), "gtcp://homeseer.crazynoodle.net:8737/hs_server.rem");
+        homeSeerApp = (Scheduler.hsapplication)Activator.GetObject(typeof(Scheduler.hsapplication), "gtcp://localhost:8737/hs_server.rem");
       }
       catch { }
     }

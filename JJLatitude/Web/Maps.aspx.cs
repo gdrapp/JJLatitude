@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using HSPI_JJLATITUDE.Model;
 using System.Configuration;
 using System.Web.UI.WebControls;
+using Microsoft.Win32;
 
 namespace HSPI_JJLATITUDE.Web
 {
@@ -15,71 +16,80 @@ namespace HSPI_JJLATITUDE.Web
   {
     hsapplication homeSeerApp;
     HSPI plugin;
+    Log log;
 
     protected void Page_Load(object sender, EventArgs e)
     {
-      Db.Init(Server.MapPath("/App_data/jjlatitude.mdb"));
-
-      var tokens = Db.GetAccessTokens();
-
-      var locations = new List<Location>();
-      foreach (var token in tokens)
+      if (!IsPostBack)
       {
         try
         {
-          string latitudeApiKey = ConfigurationManager.AppSettings["latitudeApiKey"];
-          var loc = Auth.MakeApiCall("https://www.googleapis.com/latitude/v1/currentLocation?granularity=best&key=" + latitudeApiKey, token["token"], token["secret"]);
-          JavaScriptSerializer deserializer = new JavaScriptSerializer();
-          Dictionary<string, object> dsLoc = deserializer.Deserialize<Dictionary<string, object>>(loc);
-          dsLoc = (Dictionary<string, object>)dsLoc["data"];
-          Location location = new Location();
-          location.Name = token["name"];
-          location.Email = token["email"];
-          location.Lat = (Decimal)dsLoc["latitude"];
-          location.Lon = (Decimal)dsLoc["longitude"];
-          location.Time = Epoch2DateTime((string)(dsLoc["timestampMs"]));
-          location.Accuracy = Convert.ToInt32(dsLoc["accuracy"]);
-          locations.Add(location);
-          TextBox1.Text += loc;
+          homeSeerApp = (hsapplication)Context.Items["Content"];
+
+          // Used for debugging in VS
+          if (homeSeerApp == null)
+            homeSeerApp = Global.homeSeerApp;
+
+          if (homeSeerApp == null)
+            throw new Exception("Error loading HomeSeer application object");
+
+          log = Log.GetInstance("HSPI_JJLATITUDE.Web.Maps");
+
+          plugin = (HSPI)homeSeerApp.Plugin(App.PLUGIN_NAME);
+
+          if (plugin == null)
+            throw new Exception("Error getting a reference to the plug-in.  Is it loaded and enabled?");
         }
-        catch (OAuthProtocolException ex)
+        catch (Exception ex)
         {
-
+          Response.Write(ex.Message + ex.StackTrace);
         }
-      }
+        log.Debug("Loading Maps page");
 
-      lstLocations.DataSource = locations;
-      lstLocations.DataBind();
+        String dbLocation = Registry.LocalMachine.OpenSubKey("Software").OpenSubKey("HomeSeer Technologies").OpenSubKey("HomeSeer 2").GetValue("Installdir").ToString();
+        dbLocation += "Data" + "\\" + App.PLUGIN_NAME + "\\" + App.PLUGIN_NAME + ".mdb";
 
-      try
-      {
-        homeSeerApp = (hsapplication)Context.Items["Content"];
+        log.Debug("Opening database");
+        Db.Init(dbLocation);
+        log.Debug("Reading Google access tokens from database");
+        var tokens = Db.GetAccessTokens();
 
-        // Used for debugging in VS
-        if (homeSeerApp == null)
-          homeSeerApp = Global.homeSeerApp;
+        var locations = new List<Location>();
+        foreach (var token in tokens)
+        {
+          try
+          {
+            log.Info("Loading location data for " + token["name"]);
+            string latitudeApiKey = ConfigurationManager.AppSettings["latitudeApiKey"];
+            var loc = Auth.MakeApiCall("https://www.googleapis.com/latitude/v1/currentLocation?granularity=best&key=" + latitudeApiKey, token["token"], token["secret"]);
+            JavaScriptSerializer deserializer = new JavaScriptSerializer();
+            Dictionary<string, object> dsLoc = deserializer.Deserialize<Dictionary<string, object>>(loc);
+            dsLoc = (Dictionary<string, object>)dsLoc["data"];
+            Location location = new Location();
+            location.TokenID = Convert.ToInt32(token["id"]);
+            location.Name = token["name"];
+            location.Email = token["email"];
+            location.Lat = (Decimal)dsLoc["latitude"];
+            location.Lon = (Decimal)dsLoc["longitude"];
+            location.Time = Epoch2DateTime((string)(dsLoc["timestampMs"]));
+            location.Accuracy = Convert.ToInt32(dsLoc["accuracy"]);
+            locations.Add(location);
+            TextBox1.Text += loc;
+          }
+          catch (OAuthProtocolException ex)
+          {
 
-        if (homeSeerApp == null)
-          throw new Exception("Error loading HomeSeer application object");
+          }
+        }
 
-        plugin = (HSPI)homeSeerApp.Plugin(App.PLUGIN_NAME);
+        lstLocations.DataSource = locations;
+        lstLocations.DataBind();
 
-        if (plugin == null)
-          throw new Exception("Error getting a reference to the plug-in.  Is it loaded and enabled?");
-      }
-      catch (Exception ex)
-      {
-        Response.Write(ex.Message + ex.StackTrace);
-      }
-
-      // Inject HomeSeer HTML
-      //litHSHeader.Text = GetHeadContent();
-      litHSBody.Text = GetBodyContent();
-      //litHSFooter.Text = GetFooterContent();
-
-      if (!IsPostBack)
-      {
-      }
+        // Inject HomeSeer HTML
+        litHSHeader.Text = GetHeadContent();
+        litHSBody.Text = GetBodyContent();
+        litHSFooter.Text = GetFooterContent();
+      }  // (!IsPostBack)
     }
 
     private string GetHeadContent()
@@ -132,8 +142,8 @@ namespace HSPI_JJLATITUDE.Web
     protected void btnAddAccount_Click(object sender, EventArgs e)
     {
       string[] arrUri = Request.Url.ToString().Split('/');
-      arrUri[arrUri.Length-1] = null;
-      string uri = String.Join("/",arrUri);
+      arrUri[arrUri.Length - 1] = null;
+      string uri = String.Join("/", arrUri);
 
       string callback = uri + "AuthorizeToken.aspx";
       var requestToken = Auth.MakeRequestForToken(callback);

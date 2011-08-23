@@ -11,7 +11,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HSPI_JJLATITUDE</RootNamespace>
-    <AssemblyName>HSPI JJLatitude</AssemblyName>
+    <AssemblyName>HSPI_JJLatitude</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <UseIISExpress>false</UseIISExpress>
     <TargetFrameworkProfile />
@@ -29,6 +29,9 @@
       </Objects>
     </PublishDatabaseSettings>
     <PackageAsSingleFile>false</PackageAsSingleFile>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -46,16 +49,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Libraries\Homeseer2.5.0.23\HS2Util.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="Scheduler">
       <HintPath>..\..\..\Libraries\Homeseer2.5.0.23\Scheduler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
@@ -92,6 +91,7 @@
     <Compile Include="HomeSeer.cs" />
     <Compile Include="HSPI.cs" />
     <Compile Include="App.cs" />
+    <Compile Include="Log.cs" />
     <Compile Include="Model\Device.cs" />
     <Compile Include="Model\Location.cs" />
     <Compile Include="oAuth\AuthorizationHeader.cs" />
@@ -100,6 +100,7 @@
     <Compile Include="oAuth\OAuthUtils.cs" />
     <Compile Include="oAuth\Tokens.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util.cs" />
     <Compile Include="WebLink.cs" />
     <Compile Include="Web\AuthorizeToken.aspx.cs">
       <DependentUpon>AuthorizeToken.aspx</DependentUpon>
@@ -147,8 +148,13 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)\Web\*.aspx "C:\Program Files\HomeSeer HSPRO\html\JJLatitude"
+copy "$(TargetPath)" "C:\Program Files\HomeSeer HSPRO\"
+copy "$(TargetPath)" "C:\Program Files\HomeSeer HSPRO\html\bin"
+copy "$(TargetDir)\HSPI_JJLatitude.pdb" "C:\Program Files\HomeSeer HSPRO\"
+copy "$(TargetDir)\HSPI_JJLatitude.pdb" "C:\Program Files\HomeSeer HSPRO\html\bin"
+exit 0
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -44,9 +44,11 @@ namespace Matlus.FederatedIdentity
       var request = WebRequest.Create(normalizedEndpoint);
       request.Headers.Add("Authorization", authorizationHeader.ToString());
       request.Method = "POST";
+      request.ContentLength = 0;
       try
       {
         var requestStream = request.GetRequestStream();
+        //requestStream.Close();
         var response = request.GetResponse();
         using (var responseStream = response.GetResponseStream())
         {
