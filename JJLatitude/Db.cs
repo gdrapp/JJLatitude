@@ -4,22 +4,33 @@ using System.Linq;
 using System.Web;
 using System.Data.OleDb;
 using System.Data;
+using Microsoft.Win32;
 
 namespace HSPI_JJLATITUDE
 {
   public static class Db
   {
-    private static OleDbConnection connection;
+    private static OleDbConnection connection = null;
 
-    public static void Init(string dbPath)
+    private static void Init()
     {
+     // string dbPath = Registry.LocalMachine.OpenSubKey("Software").OpenSubKey("HomeSeer Technologies").OpenSubKey("HomeSeer 2").GetValue("Installdir").ToString();
+      string dbPath = Registry.LocalMachine.OpenSubKey("Software\\HomeSeer Technologies\\HomeSeer 2").GetValue("Installdir").ToString();
+      dbPath += "Data" + "\\" + App.PLUGIN_NAME + "\\" + App.PLUGIN_NAME + ".mdb";
+
       string connectionString = "Provider=Microsoft.Jet.OLEDB.4.0; " +
                                 "Data Source=" + dbPath;
       connection = new OleDbConnection(connectionString);
+
+      if (connection == null)
+        throw new Exception("Error initializing database connection");
     }
 
     public static void PersistToken(string name, string email, string token, string secret)
     {
+      if (connection == null)
+        Init();
+
       if (connection.State != ConnectionState.Open)
         connection.Open();
 
@@ -80,6 +91,9 @@ namespace HSPI_JJLATITUDE
 
     public static List<Dictionary<string, string>> GetAccessTokens()
     {
+      if (connection == null)
+        Init();
+
       if (connection.State != ConnectionState.Open)
         connection.Open();
 

@@ -5,6 +5,7 @@ using System.Text;
 using Scheduler;
 using Scheduler.Classes;
 using Microsoft.Win32;
+using System.Threading;
 
 namespace HSPI_JJLATITUDE
 {
@@ -22,8 +23,9 @@ namespace HSPI_JJLATITUDE
     public hsapplication HomeSeerApp { get; private set; }	// Interface to HomeSeer Application
 
     private string houseCode = null;
-    private Dictionary<string, string> devices = new Dictionary<string, string>();
-    private List<Dictionary<string, string>> authTokens;
+    private Dictionary<string, string> pluginDevices = new Dictionary<string, string>();
+    private List<Dictionary<string, string>> accessTokens;
+    private Thread locationThread;
 
     private Log log = Log.GetInstance("HSPI_JJLATITUDE.App");
 
@@ -85,12 +87,25 @@ namespace HSPI_JJLATITUDE
     #region "Initialization and Cleanup"
     public void Initialize()
     {
+
+      //InitDB();
+
       //	Now that we have the HomeSeer object, get our devices
       GetHomeSeerDevices();
       LoadAuthTokens();
       CreateDevices();
+      StartLocationFinderThread();
     }
+/*
+    private void InitDB()
+    {
+      String dbLocation = Registry.LocalMachine.OpenSubKey("Software").OpenSubKey("HomeSeer Technologies").OpenSubKey("HomeSeer 2").GetValue("Installdir").ToString();
+      dbLocation += "Data" + "\\" + App.PLUGIN_NAME + "\\" + App.PLUGIN_NAME + ".mdb";
 
+      log.Debug("Initializing database connection");
+      Db.Init(dbLocation);
+    }
+*/
     // Load all devices that belong to the plugin
     private void GetHomeSeerDevices()
     {
@@ -108,7 +123,7 @@ namespace HSPI_JJLATITUDE
             log.Debug(String.Format("Found device: DC={0}{1} NAME={2} IOMISC={3}", deviceClass.hc, deviceClass.dc, deviceClass.Name, deviceClass.iomisc));
             this.houseCode = deviceClass.hc;
             log.Debug("Got plugin housecode: " + this.houseCode);
-            this.devices.Add(deviceClass.iomisc, deviceClass.hc + deviceClass.dc);
+            this.pluginDevices.Add(deviceClass.iomisc, deviceClass.hc + deviceClass.dc);
           }
         }
         if (this.houseCode == null)
@@ -128,10 +143,10 @@ namespace HSPI_JJLATITUDE
       try
       {
         log.Debug("Loading authorization tokens");
-        String dbLocation = Registry.LocalMachine.OpenSubKey("Software").OpenSubKey("HomeSeer Technologies").OpenSubKey("HomeSeer 2").GetValue("Installdir").ToString();
-        dbLocation += "Data" + "\\" + App.PLUGIN_NAME + "\\" + App.PLUGIN_NAME + ".mdb";
-        Db.Init(dbLocation);
-        authTokens = Db.GetAccessTokens();
+        //String dbLocation = Registry.LocalMachine.OpenSubKey("Software").OpenSubKey("HomeSeer Technologies").OpenSubKey("HomeSeer 2").GetValue("Installdir").ToString();
+        //dbLocation += "Data" + "\\" + App.PLUGIN_NAME + "\\" + App.PLUGIN_NAME + ".mdb";
+        //Db.Init(dbLocation);
+        accessTokens = Db.GetAccessTokens();
         //log.Debug("Loaded auth tokens : " + String.Join(":", authTokens.Select(x => String.Format("{0}", x.Value)).ToArray()));
       }
       catch (Exception ex)
@@ -143,52 +158,16 @@ namespace HSPI_JJLATITUDE
     private void CreateDevices()
     {
       log.Debug("Creating missing plugin devices");
-      log.Debug("Existing devices:" + String.Join(":", devices.Select(x => String.Format("{0}={1}", x.Key, x.Value)).ToArray()));
-      foreach (var token in authTokens)
+      log.Debug("Existing devices:" + String.Join(" ", pluginDevices.Select(x => String.Format("{0}={1}", x.Key, x.Value)).ToArray()));
+      foreach (var token in accessTokens)
       {
         try
         {
-          if (!devices.ContainsKey("LAT:" + token["id"]))
-          {
-            string newDC = GetNextFreeDeviceCode(this.houseCode);
-            if (newDC != null)
-            {
-              log.Debug(String.Format("Creating device: Latitude - {0}", token["name"]));
-              DeviceClass latDevice = HomeSeerApp.NewDeviceEx(String.Format("Latitude - {0}", token["name"]));
-              latDevice.@interface = App.PLUGIN_NAME;
-              latDevice.misc = HomeSeer.MISC_STATUS_ONLY;
-              latDevice.iotype = HomeSeer.IOTYPE_INPUT;
-              latDevice.iomisc = "LAT:" + token["id"];
-              latDevice.dev_type_string = App.PLUGIN_NAME + " Plug-in";
-              latDevice.hc = this.houseCode;
-              latDevice.dc = newDC;
-            }
-            else
-            {
-              log.Error("Could not create plugin device: device limit reached");
-            }
-          }
-
-          if (!devices.ContainsKey("LON:" + token["id"]))
-          {
-            string newDC = GetNextFreeDeviceCode(this.houseCode);
-            if (newDC != null)
-            {
-              log.Debug(String.Format("Creating device: Longitude - {0}", token["name"]));
-              DeviceClass lonDevice = HomeSeerApp.NewDeviceEx(String.Format("Longitude - {0}", token["name"]));
-              lonDevice.@interface = App.PLUGIN_NAME;
-              lonDevice.misc = HomeSeer.MISC_STATUS_ONLY;
-              lonDevice.iotype = HomeSeer.IOTYPE_INPUT;
-              lonDevice.iomisc = "LON:" + token["id"];
-              lonDevice.dev_type_string = App.PLUGIN_NAME + " Plug-in";
-              lonDevice.hc = this.houseCode;
-              lonDevice.dc = newDC;
-            }
-            else
-            {
-              log.Error("Could not create plugin device: device limit reached");
-            }
-          }
+          CreateDevice(String.Format("Latitude - {0}", token["name"]), "LAT:" + token["id"]);
+          CreateDevice(String.Format("Longitude - {0}", token["name"]), "LON:" + token["id"]);
+          CreateDevice(String.Format("Accuracy - {0}", token["name"]), "ACC:" + token["id"]);
+          CreateDevice(String.Format("Map - {0}", token["name"]), "MAP:" + token["id"]);
+          CreateDevice(String.Format("Last Update - {0}", token["name"]), "TIME:" + token["id"]);
         }
         catch (Exception ex)
         {
@@ -197,12 +176,84 @@ namespace HSPI_JJLATITUDE
       }
     }
 
+    private void CreateDevice(string name, string iomisc)
+    {
+      if (!this.pluginDevices.ContainsKey(iomisc))
+      {
+        string newDC = GetNextFreeDeviceCode(this.houseCode);
+        if (newDC != null)
+        {
+          log.Debug(String.Format("Creating device: {0}", name));
+          DeviceClass deviceClass = HomeSeerApp.NewDeviceEx(name);
+          deviceClass.@interface = App.PLUGIN_NAME;
+          deviceClass.location = App.PLUGIN_NAME;
+          deviceClass.misc = HomeSeer.MISC_STATUS_ONLY;
+          deviceClass.iotype = HomeSeer.IOTYPE_INPUT;
+          deviceClass.iomisc = iomisc;
+          deviceClass.dev_type_string = App.PLUGIN_NAME + " Plug-in";
+          deviceClass.hc = this.houseCode;
+          deviceClass.dc = newDC;
+
+          // Add new device to list of devices owned by the plugin
+          this.pluginDevices.Add(deviceClass.iomisc, deviceClass.hc + deviceClass.dc);
+        }
+        else
+        {
+          log.Error("Could not create plugin device: device limit reached");
+        }
+      }
+
+    }
+
+    private void StartLocationFinderThread()
+    {
+      log.Info("Spawning Google Latitude update thread");
+
+      try
+      {
+        //LatitudeThread latThread = new LatitudeThread(this.HomeSeerApp, this.pluginDevices);
+        LatitudeThread latThread = new LatitudeThread();
+        locationThread = new Thread(new ThreadStart(latThread.UpdaterThread));
+        locationThread.Start();
+      }
+      catch (Exception ex)
+      {
+
+      }
+    }
+
     public void CleanUp()
     {
+      log.Info("Shutting down");
+
+      locationThread.Abort();
+
       HomeSeerApp = null;
       homeSeerPI = null;
     }
     #endregion
 
+    #region "Misc. methods"
+
+    public void UpdateDevice(string iomisc, string status, int value)
+    {
+      //Update the longitude device
+      if (pluginDevices.ContainsKey(iomisc))
+      {
+        string deviceCode = pluginDevices[iomisc];
+        if (HomeSeerApp.DeviceExists(deviceCode) != -1)
+          lock (this)
+          {
+            HomeSeerApp.SetDeviceString(deviceCode, status, true);
+            HomeSeerApp.SetDeviceValue(deviceCode, value);
+          }
+      }
+    }
+
+    public void UpdateDevice(string iomisc, string status)
+    {
+      UpdateDevice(iomisc, status, 0);
+    }
+    #endregion
   }
 }

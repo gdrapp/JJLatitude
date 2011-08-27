@@ -91,6 +91,8 @@
     <Compile Include="HomeSeer.cs" />
     <Compile Include="HSPI.cs" />
     <Compile Include="App.cs" />
+    <Compile Include="Latitude.cs" />
+    <Compile Include="LatitudeThread.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Model\Device.cs" />
     <Compile Include="Model\Location.cs" />
@@ -148,12 +150,11 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)\Web\*.aspx "C:\Program Files\HomeSeer HSPRO\html\JJLatitude"
+    <PostBuildEvent>copy "$(ProjectDir)Web\*.aspx" "C:\Program Files\HomeSeer HSPRO\html\JJLatitude"
 copy "$(TargetPath)" "C:\Program Files\HomeSeer HSPRO\"
 copy "$(TargetPath)" "C:\Program Files\HomeSeer HSPRO\html\bin"
-copy "$(TargetDir)\HSPI_JJLatitude.pdb" "C:\Program Files\HomeSeer HSPRO\"
-copy "$(TargetDir)\HSPI_JJLatitude.pdb" "C:\Program Files\HomeSeer HSPRO\html\bin"
-exit 0
+copy "$(TargetDir)HSPI_JJLatitude.pdb" "C:\Program Files\HomeSeer HSPRO\"
+copy "$(TargetDir)HSPI_JJLatitude.pdb" "C:\Program Files\HomeSeer HSPRO\html\bin"
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using Scheduler;
 using System.Collections;
+using System.IO;
 
 namespace HSPI_JJLATITUDE
 {
@@ -19,9 +20,14 @@ namespace HSPI_JJLATITUDE
 
     public static Log GetInstance(string name)
     {
+      return Log.GetInstance(name, null);
+    }
+
+    public static Log GetInstance(string name, hsapplication homeSeerApp)
+    {
       if (classes.ContainsKey(name)) return (Log)classes[name];
 
-      Log log = new Log(name);
+      Log log = new Log(name, homeSeerApp);
       classes.Add(name, log);
       return log;
     }
@@ -31,14 +37,56 @@ namespace HSPI_JJLATITUDE
 
     private Log(string logClass) 
     {
+      Init(logClass);
+    }
+
+    private Log(string logClass, hsapplication homeSeerApp)
+    {
+      if (homeSeerApp != null)
+        this.HomeSeerApp = homeSeerApp;
+
+      Init(logClass);
+    }
+
+    private void Init(string logClass)
+    {
       this.logClass = logClass;
       Log.Level = LogLevel.All;
     }
 
-    private static void WriteFile(string text)
+    private void WriteFile(string text)
     {
-      lock(_syncObject) {
+      if (HomeSeerApp != null)
+      {
+        lock (_syncObject)
+        {
+          try
+          {
+            using (StreamWriter outfile = new StreamWriter(HomeSeerApp.GetAppPath() + "\\" + App.PLUGIN_NAME + ".log", true))
+            {
+              outfile.WriteLine(logClass + " - " + text);
+            }
+          }
+          catch (Exception ex)
+          {
 
+          }
+        }
+      }
+    }
+
+    private void WriteHomeSeer(string text)
+    {
+      if (HomeSeerApp != null)
+      {
+        try
+        {
+          HomeSeerApp.WriteLog(App.PLUGIN_NAME, text);
+        }
+        catch (Exception ex)
+        {
+
+        }
       }
     }
 
@@ -46,40 +94,40 @@ namespace HSPI_JJLATITUDE
     {
       if (Log.Level < LogLevel.Fatal) return;
 
-      if (HomeSeerApp != null)
-        HomeSeerApp.WriteLog(App.PLUGIN_NAME, String.Format("{0}: {1}", "FATAL", message));
+      WriteFile(String.Format("{0}: {1}", "FATAL", message));
+      WriteHomeSeer(String.Format("{0}", message));
     }
 
     public void Error(string message)
     {
       if (Log.Level < LogLevel.Error) return;
 
-      if (HomeSeerApp != null)
-        HomeSeerApp.WriteLog(App.PLUGIN_NAME, String.Format("{0}: {1}", "ERROR", message));
+      WriteFile(String.Format("{0}: {1}", "ERROR", message));
+      WriteHomeSeer(String.Format("{0}", message));
     }
 
     public void Warn(string message)
     {
       if (Log.Level < LogLevel.Warn) return;
 
-      if (HomeSeerApp != null)
-        HomeSeerApp.WriteLog(App.PLUGIN_NAME, String.Format("{0}: {1}", "WARN", message));
+      WriteFile(String.Format("{0}: {1}", "WARN", message));
+      WriteHomeSeer(String.Format("{0}", message));
     }
 
     public void Info(string message)
     {
       if (Log.Level < LogLevel.Info) return;
 
-      if (HomeSeerApp != null)
-        HomeSeerApp.WriteLog(App.PLUGIN_NAME, String.Format("{0}: {1}", "INFO", message));
+      WriteFile(String.Format("{0}: {1}", "INFO", message));
+      WriteHomeSeer(String.Format("{0}", message));
     }
 
     public void Debug(string message)
     {
       if (Log.Level < LogLevel.Debug) return;
 
-      if (HomeSeerApp != null)
-        HomeSeerApp.WriteLog(App.PLUGIN_NAME, String.Format("{0}: {1}", "DEBUG", message));
+      WriteFile(String.Format("{0}: {1}", "DEBUG", message));
+      WriteHomeSeer(String.Format("{0}", message));
     }
   }
 }

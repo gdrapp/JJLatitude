@@ -89,7 +89,7 @@ namespace HSPI_JJLATITUDE
         //	Register the config link here
         object linkConfig = new WebLink("/JJLatitude/Config.aspx", "JJLatitude Config", "JJLatitude Configuration");
         appInstance.HomeSeerApp.RegisterConfigLink(ref linkConfig, App.PLUGIN_NAME);
-        object linkApp = new WebLink("/JJLatitude/JJLatitude.aspx", App.PLUGIN_NAME, App.PLUGIN_NAME);
+        object linkApp = new WebLink("/JJLatitude/Maps.aspx", App.PLUGIN_NAME, App.PLUGIN_NAME);
         appInstance.HomeSeerApp.RegisterLinkEx(ref linkApp, App.PLUGIN_NAME);
 
         //	Tell the app to go find its device
@@ -107,8 +107,8 @@ namespace HSPI_JJLATITUDE
     {
       try
       {
-        //	Tell the app to disable HomeSeer access
-        //hspiApp.DisableHomeSeerAccess();
+        //	Tell the app we're shutting down
+        appInstance.CleanUp();
       }
       catch
       {

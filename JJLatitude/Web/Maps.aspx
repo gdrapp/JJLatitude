@@ -1,8 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="True" CodeBehind="Maps.aspx.cs" Inherits="HSPI_JJLATITUDE.Web.Maps" EnableSessionState="True" %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head runat="server">
     <asp:Literal ID="litHSHeader" runat="server"></asp:Literal>
     <style type="text/css">
@@ -30,6 +28,10 @@
 </head>
 <body>
     <asp:Literal ID="litHSBody" runat="server"></asp:Literal>
+    <br />
+    <input type="button" class="functionrowbutton" value="Maps" onclick="location.href='/JJLatitude/Maps.aspx'" onmouseover="this.className='functionrowbuttonselected';" onmouseout="this.className='functionrowbutton';" />
+    <input type="button" class="functionrowbutton" value="Places" onclick="location.href='/JJLatitude/Places.aspx'" onmouseover="this.className='functionrowbuttonselected';" onmouseout="this.className='functionrowbutton';" />
+
     <form id="form1" runat="server">
     <div style="border-width: 0px; border-style: solid;">    
       <br />
@@ -41,8 +43,9 @@
         <HeaderStyle BackColor="#003399" Font-Bold="True" ForeColor="#CCCCFF" />
         <ItemStyle BackColor="White" ForeColor="#003399" />
         <ItemTemplate>
-          <div align="center">
-            <asp:Label ID="lblName" runat="server" Text='<%# Eval("Name") %>'></asp:Label>
+          <div style="text-align:center">
+            <asp:Label ID="lblName" runat="server" Text='<%# Eval("Name") %>' 
+              BackColor="#003399" Font-Bold="True" ForeColor="White" Width="100%"></asp:Label>
           </div>
           <br />
           <div id="map_canvas<%# Container.ItemIndex %>" style="width: 400px; height: 400px">
@@ -68,15 +71,15 @@
           <table style="width:100%;">
             <tr>
               <td class="style1">
-                <asp:Label ID="Label1" runat="server" Text="Email :"></asp:Label>
+                <asp:Label ID="Label1" runat="server" Text="Email :" Font-Bold="True"></asp:Label>
               </td>
               <td>
                 <asp:Label ID="lblEmail" runat="server" Text='<%# Eval("Email") %>'></asp:Label>
               </td>
             </tr>
-            <tr>
+            <tr style="background-color: #DFDFDF">
               <td class="style1">
-                <asp:Label ID="Label2" runat="server" Text="Latitude :"></asp:Label>
+                <asp:Label ID="Label2" runat="server" Text="Latitude :" Font-Bold="True"></asp:Label>
               </td>
               <td>
                 <asp:Label ID="lblLat" runat="server" Text='<%# Eval("Lat") %>'></asp:Label>
@@ -84,15 +87,15 @@
             </tr>
             <tr>
               <td class="style1">
-                <asp:Label ID="Label3" runat="server" Text="Longitude :"></asp:Label>
+                <asp:Label ID="Label3" runat="server" Text="Longitude :" Font-Bold="True"></asp:Label>
               </td>
               <td>
                 <asp:Label ID="lblLon" runat="server" Text='<%# Eval("Lon") %>'></asp:Label>
               </td>
             </tr>
-            <tr>
+            <tr style="background-color: #DFDFDF">
               <td class="style1">
-                <asp:Label ID="Label4" runat="server" Text="Accuracy :"></asp:Label>
+                <asp:Label ID="Label4" runat="server" Text="Accuracy :" Font-Bold="True"></asp:Label>
               </td>
               <td>
                 <asp:Label ID="lblAccuracy" runat="server" 
@@ -101,7 +104,7 @@
             </tr>
             <tr>
               <td class="style1">
-                <asp:Label ID="Label5" runat="server" Text="Time :"></asp:Label>
+                <asp:Label ID="Label5" runat="server" Text="Time :" Font-Bold="True"></asp:Label>
               </td>
               <td>
                 <asp:Label ID="lblTime" runat="server" Text='<%# Eval("Time") %>'></asp:Label>

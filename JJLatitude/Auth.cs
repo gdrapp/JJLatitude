@@ -7,8 +7,10 @@ namespace HSPI_JJLATITUDE
 {
   public static class Auth
   {
-    private static readonly string consumerKey = ConfigurationManager.AppSettings["consumerKey"];
-    private static readonly string consumerSecret = ConfigurationManager.AppSettings["consumerSecret"];
+    //private static readonly string consumerKey = ConfigurationManager.AppSettings["consumerKey"];
+    //private static readonly string consumerSecret = ConfigurationManager.AppSettings["consumerSecret"];
+    private static readonly string consumerKey = "324888005514.apps.googleusercontent.com";
+    private static readonly string consumerSecret = "CMLpdvG2OwtbbMT2HzzR1nyE";
 
     private static string tokenSecret = null;
 
