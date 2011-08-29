@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Scheduler;
 
 namespace HSPI_JJLATITUDE
 {
@@ -60,6 +61,56 @@ namespace HSPI_JJLATITUDE
     public const int IOTYPE_ANALOG_INPUT = 2;
     public const int IOTYPE_VARIABLE = 3;
     public const int IOTYPE_CONTROL = 4;		// device is a control device, no type display in device 
+
+    #endregion
+
+    #region "Web Related Methods"
+    public static string GetHeadContent(hsapplication homeSeerApp)
+    {
+      string header = "";
+
+      try
+      {
+        header = homeSeerApp.GetPageHeader(App.PLUGIN_NAME, "", "", false, false, true, false, false);
+      }
+      catch (Exception ex)
+      {
+
+      }
+      return header;
+    }
+
+    public static string GetBodyContent(hsapplication homeSeerApp)
+    {
+      string body = "";
+
+      try
+      {
+        body = homeSeerApp.GetPageHeader(App.PLUGIN_NAME, "", "", false, false, false, true, false);
+      }
+      catch (Exception ex)
+      {
+
+      }
+      return body;
+    }
+
+    public static string GetFooterContent(hsapplication homeSeerApp)
+    {
+      string footer = "";
+
+      try
+      {
+        footer = homeSeerApp.GetPageFooter(false);
+      }
+      catch (Exception ex)
+      {
+
+      }
+      footer = footer.Replace("</body>", "");
+      footer = footer.Replace("</html>", "");
+      return footer;
+    }
 
     #endregion
   }

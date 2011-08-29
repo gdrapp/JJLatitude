@@ -1,8 +1,9 @@
-﻿<%@ Page Language="C#" AutoEventWireup="True" CodeBehind="Maps.aspx.cs" Inherits="HSPI_JJLATITUDE.Web.Maps" EnableSessionState="True" %>
+﻿<%@ Page Language="C#" AutoEventWireup="True" CodeBehind="People.aspx.cs" Inherits="HSPI_JJLATITUDE.Web.People" EnableSessionState="False" EnableViewState="false" %>
 
 <html>
 <head runat="server">
     <asp:Literal ID="litHSHeader" runat="server"></asp:Literal>
+    <title></title>
     <style type="text/css">
       .style1
       {
@@ -11,6 +12,10 @@
     </style>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.4&sensor=false"></script>
     <script type="text/javascript">
+      var geocoder;
+      function initialize() {
+        geocoder = new google.maps.Geocoder();
+      }
       function addLoadEvent(func) {
         var oldonload = window.onload;
         if (typeof window.onload != 'function') {
@@ -26,13 +31,13 @@
       }
     </script>
 </head>
-<body>
+<body onload="initialize();">
     <asp:Literal ID="litHSBody" runat="server"></asp:Literal>
     <br />
-    <input type="button" class="functionrowbutton" value="Maps" onclick="location.href='/JJLatitude/Maps.aspx'" onmouseover="this.className='functionrowbuttonselected';" onmouseout="this.className='functionrowbutton';" />
-    <input type="button" class="functionrowbutton" value="Places" onclick="location.href='/JJLatitude/Places.aspx'" onmouseover="this.className='functionrowbuttonselected';" onmouseout="this.className='functionrowbutton';" />
 
-    <form id="form1" runat="server">
+    <!--#include file="PluginMenu.inc"-->
+
+    <form id="form1" runat="server" enableviewstate="False">
     <div style="border-width: 0px; border-style: solid;">    
       <br />
       <asp:DataList ID="lstLocations" runat="server" BorderColor="#3366CC" 
@@ -65,29 +70,48 @@
               map: map<%# Container.ItemIndex %>
             });
             marker<%# Container.ItemIndex %>.setTitle("<%# Eval("Name") %>")
+
+            /*var infowindow<%# Container.ItemIndex %> = new google.maps.InfoWindow();
+
+            geocoder.geocode({'latLng': latlng}, function(results, status) {
+              if (status == google.maps.GeocoderStatus.OK) {
+                if (results[1]) {
+                  infowindow<%# Container.ItemIndex %>.setContent(results[0].formatted_address);
+                  infowindow<%# Container.ItemIndex %>.open(map<%# Container.ItemIndex %>, marker<%# Container.ItemIndex %>);
+                }
+              }
+            });*/
           });
           </script>
 
           <table style="width:100%;">
-            <tr>
+            <!--<tr>
               <td class="style1">
                 <asp:Label ID="Label1" runat="server" Text="Email :" Font-Bold="True"></asp:Label>
               </td>
               <td>
                 <asp:Label ID="lblEmail" runat="server" Text='<%# Eval("Email") %>'></asp:Label>
               </td>
+            </tr>-->
+            <tr>
+              <td class="style1">
+                <asp:Label ID="Label6" runat="server" Text="Address :" Font-Bold="True"></asp:Label>
+              </td>
+              <td>
+                <asp:Label ID="lblAddress" runat="server" Text='<%# Eval("Address") %>'></asp:Label>
+              </td>
             </tr>
             <tr style="background-color: #DFDFDF">
               <td class="style1">
-                <asp:Label ID="Label2" runat="server" Text="Latitude :" Font-Bold="True"></asp:Label>
+                <asp:Label ID="Label2" runat="server" Font-Bold="True" Text="Latitude :"></asp:Label>
               </td>
               <td>
                 <asp:Label ID="lblLat" runat="server" Text='<%# Eval("Lat") %>'></asp:Label>
               </td>
             </tr>
-            <tr>
+            <tr style="background-color: #FFFFFF">
               <td class="style1">
-                <asp:Label ID="Label3" runat="server" Text="Longitude :" Font-Bold="True"></asp:Label>
+                <asp:Label ID="Label3" runat="server" Font-Bold="True" Text="Longitude :"></asp:Label>
               </td>
               <td>
                 <asp:Label ID="lblLon" runat="server" Text='<%# Eval("Lon") %>'></asp:Label>
@@ -102,7 +126,7 @@
                   Text='<%# Eval("Accuracy","{0:n0} feet") %>'></asp:Label>
               </td>
             </tr>
-            <tr>
+            <tr style="background-color: #FFFFFF">
               <td class="style1">
                 <asp:Label ID="Label5" runat="server" Text="Time :" Font-Bold="True"></asp:Label>
               </td>
@@ -116,11 +140,9 @@
       </asp:DataList>
       <br />
       <asp:Button ID="btnAddAccount" runat="server" onclick="btnAddAccount_Click" 
-        Text="Add Account" />
+        Text="Add Account" EnableViewState="False" />
       <br />
       <br />
-      <asp:TextBox ID="TextBox1" runat="server" Height="121px" TextMode="MultiLine" 
-        Width="448px" Wrap="False" Visible="False"></asp:TextBox>
     </div>
     </form>
     <asp:Literal ID="litHSFooter" runat="server"></asp:Literal>

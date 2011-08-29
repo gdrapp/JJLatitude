@@ -10,11 +10,13 @@ namespace HSPI_JJLATITUDE.Model
     public int TokenID { get; set; }
     public string Name { get; set; }
     public string Email { get; set; }
-    public Decimal Lat { get; set; }
-    public Decimal Lon { get; set; }
     public int Accuracy { get; set; }
     public DateTime Time { get; set; }
-    
+    public string Address { get; set; }
+
+    public Decimal Lat { get; private set; }
+    public Decimal Lon { get; private set; }
+
     public Location() { }
 
     public Location(string email, Decimal lat, Decimal lon, int accuracy, DateTime time)
@@ -26,12 +28,23 @@ namespace HSPI_JJLATITUDE.Model
       this.Time = time;
     }
 
+    public void LatLng(Decimal lat, Decimal lon)
+    {
+      if (lat != Lat || lon != Lon)
+      {
+        // If lat or lon changes, reverse geocode the address
+        this.Address = Geocode.ToAddress(lat, lon);
+      }
+      Lat = lat;
+      Lon = lon;
+    }
+
     public string MapUrl
     {
       get
       {
-        return string.Format("https://maps.googleapis.com/maps/api/staticmap?markers=|{0},{1}&size={2}x{3}&sensor=false",
-          this.Lat, this.Lon, 320, 320);
+        return string.Format("https://maps.googleapis.com/maps/api/staticmap?sensor=false&size={0}x{1}&zoom={2}&markers=color:red|{3},{4}",
+          300, 300, 12, this.Lat, this.Lon);
       }
       private set { }
     }

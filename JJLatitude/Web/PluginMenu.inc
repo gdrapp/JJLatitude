@@ -1,0 +1,3 @@
+﻿<input type="button" class="functionrowbutton" value="People" onclick="location.href='/JJLatitude/People.aspx'" onmouseover="this.className='functionrowbuttonselected';" onmouseout="this.className='functionrowbutton';" />
+<input type="button" class="functionrowbutton" value="Places" onclick="location.href='/JJLatitude/Places.aspx'" onmouseover="this.className='functionrowbuttonselected';" onmouseout="this.className='functionrowbutton';" />
+<input type="button" class="functionrowbutton" value="Config" onclick="location.href='/JJLatitude/Config.aspx'" onmouseover="this.className='functionrowbuttonselected';" onmouseout="this.className='functionrowbutton';" />

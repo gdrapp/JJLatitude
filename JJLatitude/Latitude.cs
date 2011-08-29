@@ -15,9 +15,11 @@ namespace HSPI_JJLATITUDE
   {
     public const string latitudeApiKey = "AIzaSyCFtCJF1D5eT2JiV2OfyXsE9RHuG6iVKIM";
 
+    private static Dictionary<string, Location> locations = new Dictionary<string, Location>();
+
     public static List<Location> UpdateLocations()
     {
-      var locations = new List<Location>();
+      //var locations = new List<Location>();
       var accessTokens = Db.GetAccessTokens();
 
       foreach (var token in accessTokens)
@@ -29,27 +31,31 @@ namespace HSPI_JJLATITUDE
           Dictionary<string, object> dsLoc = deserializer.Deserialize<Dictionary<string, object>>(loc);
           dsLoc = (Dictionary<string, object>)dsLoc["data"];
 
-          Location location = new Location();
+          Location location;
+          if (locations.ContainsKey(token["id"]) && locations[token["id"]] != null && locations[token["id"]] is Location)
+            location = locations[token["id"]];
+          else
+            location = new Location();
+
           location.TokenID = Convert.ToInt32(token["id"]);
           location.Name = token["name"];
           location.Email = token["email"];
-          location.Lat = (Decimal)dsLoc["latitude"];
-          location.Lon = (Decimal)dsLoc["longitude"];
+          location.LatLng((Decimal)dsLoc["latitude"], (Decimal)dsLoc["longitude"]);
           location.Time = DateTime.SpecifyKind(Util.Epoch2DateTime((string)(dsLoc["timestampMs"])),DateTimeKind.Utc).ToLocalTime();
           location.Accuracy = Convert.ToInt32(dsLoc["accuracy"]);
-          locations.Add(location);
+          locations.Add(token["id"], location);
         }
-        catch (OAuthProtocolException ex)
+        catch (OAuthProtocolException)
         {
         
         }
-        catch (Exception ex)
+        catch (Exception)
         {
 
         }
 
       }
-      return locations;
+      return new List<Location>(locations.Values);
     }
 
 

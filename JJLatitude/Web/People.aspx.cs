@@ -12,11 +12,11 @@ using Microsoft.Win32;
 
 namespace HSPI_JJLATITUDE.Web
 {
-  public partial class Maps : System.Web.UI.Page
+  public partial class People : System.Web.UI.Page
   {
-    hsapplication homeSeerApp;
-    HSPI plugin;
-    Log log;
+    private hsapplication homeSeerApp;
+    private HSPI plugin;
+    private Log log;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -33,7 +33,7 @@ namespace HSPI_JJLATITUDE.Web
           if (homeSeerApp == null)
             throw new Exception("Error loading HomeSeer application object");
 
-          log = Log.GetInstance("HSPI_JJLATITUDE.Web.Maps", homeSeerApp);
+          log = Log.GetInstance("HSPI_JJLATITUDE.Web.People", homeSeerApp);
 
           plugin = (HSPI)homeSeerApp.Plugin(App.PLUGIN_NAME);
 
@@ -44,63 +44,16 @@ namespace HSPI_JJLATITUDE.Web
         {
           Response.Write(ex.Message + ex.StackTrace);
         }
-        log.Debug("Loading Maps page");
+        log.Debug("Loading People page");
 
         lstLocations.DataSource = Latitude.UpdateLocations();
         lstLocations.DataBind();
 
         // Inject HomeSeer HTML
-        litHSHeader.Text = GetHeadContent();
-        litHSBody.Text = GetBodyContent();
-        litHSFooter.Text = GetFooterContent();
+        litHSHeader.Text = HomeSeer.GetHeadContent(homeSeerApp);
+        litHSBody.Text = HomeSeer.GetBodyContent(homeSeerApp);
+        litHSFooter.Text = HomeSeer.GetFooterContent(homeSeerApp);
       }  // (!IsPostBack)
-    }
-
-    private string GetHeadContent()
-    {
-      string header = "";
-
-      try
-      {
-        header = homeSeerApp.GetPageHeader(App.PLUGIN_NAME, "", "", false, false, true, false, false);
-      }
-      catch
-      {
-
-      }
-      return header;
-    }
-
-    private string GetBodyContent()
-    {
-      string body = "";
-
-      try
-      {
-        body = homeSeerApp.GetPageHeader(App.PLUGIN_NAME, "", "", false, false, false, true, false);
-      }
-      catch
-      {
-
-      }
-      return body;
-    }
-
-    private string GetFooterContent()
-    {
-      string footer = "";
-
-      try
-      {
-        footer = homeSeerApp.GetPageFooter(false);
-      }
-      catch
-      {
-
-      }
-      footer = footer.Replace("</body>", "");
-      footer = footer.Replace("</html>", "");
-      return footer;
     }
 
     protected void btnAddAccount_Click(object sender, EventArgs e)

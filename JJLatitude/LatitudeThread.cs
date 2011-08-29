@@ -4,52 +4,77 @@ using System.Linq;
 using System.Web;
 using Scheduler;
 using System.Threading;
+using HSPI_JJLATITUDE.Config;
 
 namespace HSPI_JJLATITUDE
 {
   public class LatitudeThread
   {
-    App app = App.GetInstance();
-/*    private hsapplication homeSeerApp;
-    private Dictionary<string, string> pluginDevices;
+    private App app = App.GetInstance();
+    private Log log;
 
-    public LatitudeThread(hsapplication homeSeerApp, Dictionary<string, string> pluginDevices)
+    public LatitudeThread() 
     {
-      this.homeSeerApp = homeSeerApp;
-      this.pluginDevices = pluginDevices;
-    }*/
-    public LatitudeThread() { }
+      log = Log.GetInstance("HSPI_JJLATITUDE.LatitudeThread", app.HomeSeerApp);
+    }
 
     public void UpdaterThread()
     {
+      log.Debug("Entering update thread loop");
       while (true)
       {
         try
         {
+          log.Debug("Getting update locations");
           var locations = Latitude.UpdateLocations();
           foreach (var location in locations)
           {
+            log.Debug(String.Format("Updating plugin devices for [{0}]", location.Name));
+
             // Update the latitude device
+            log.Debug("Updating latitude device");
             app.UpdateDevice("LAT:" + location.TokenID.ToString(), location.Lat.ToString());
 
             //Update the longitude device
+            log.Debug("Updating longitude plugin device"); 
             app.UpdateDevice("LON:" + location.TokenID.ToString(), location.Lon.ToString());
+            
+            // Update the accuracy device
+            log.Debug("Updating accuracy plugin device");
             app.UpdateDevice("ACC:" + location.TokenID.ToString(), String.Format("{0} feet", location.Accuracy.ToString()), location.Accuracy);
             
             // Update the static map device
-            string mapUrl = "<img src='http://maps.googleapis.com/maps/api/staticmap?sensor=false&size=300x300&zoom=12&markers=color:blue|{0},{1}' />";
-            app.UpdateDevice("MAP:" + location.TokenID.ToString(), String.Format(mapUrl, location.Lat, location.Lon));
+            log.Debug("Updating map plugin device");
+            app.UpdateDevice("MAP:" + location.TokenID.ToString(), String.Format("<img src='{0}' />", location.MapUrl));
 
             // Update the timestamp device
+            log.Debug("Updating timestamp plugin device");
             app.UpdateDevice("TIME:" + location.TokenID.ToString(), location.Time.ToString());
-          }
-          Thread.Sleep(60000);
-        }
-        catch (ThreadAbortException ex)
-        {
 
+            // Update the nearest address device
+            log.Debug("Updating nearest address plugin device");
+            app.UpdateDevice("ADDRESS:" + location.TokenID.ToString(), location.Address);
+          }
+
+          try
+          {
+            string updateFreq = AppConfig.Read("Main", "UpdateFrequency");
+            int sleepSecs = Convert.ToInt32(updateFreq);
+            log.Debug(String.Format("Sleeping for {0} seconds", sleepSecs));
+            Thread.Sleep(sleepSecs * 1000);
+          }
+          catch (ThreadAbortException)
+          {
+            log.Debug("Shutting down location update thread");
+          }          
+          catch (Exception)
+          {
+            // If we error out reading the value from the config above, default to 300 seconds
+            log.Debug(String.Format("Error reading update frequency, sleeping for 300 seconds"));
+            Thread.Sleep(300 * 1000);
+          }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
 
         }

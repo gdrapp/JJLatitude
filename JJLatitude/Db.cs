@@ -12,27 +12,36 @@ namespace HSPI_JJLATITUDE
   {
     private static OleDbConnection connection = null;
 
+    public static string DbPath;
+
+    static Db()
+    {
+      DbPath = Registry.LocalMachine.OpenSubKey("Software\\HomeSeer Technologies\\HomeSeer 2").GetValue("Installdir").ToString();
+      DbPath += "Data" + "\\" + App.PLUGIN_NAME + "\\" + App.PLUGIN_NAME + ".mdb";
+    }
+
     private static void Init()
     {
-     // string dbPath = Registry.LocalMachine.OpenSubKey("Software").OpenSubKey("HomeSeer Technologies").OpenSubKey("HomeSeer 2").GetValue("Installdir").ToString();
-      string dbPath = Registry.LocalMachine.OpenSubKey("Software\\HomeSeer Technologies\\HomeSeer 2").GetValue("Installdir").ToString();
-      dbPath += "Data" + "\\" + App.PLUGIN_NAME + "\\" + App.PLUGIN_NAME + ".mdb";
-
       string connectionString = "Provider=Microsoft.Jet.OLEDB.4.0; " +
-                                "Data Source=" + dbPath;
+                                "Data Source=" + DbPath;
       connection = new OleDbConnection(connectionString);
 
       if (connection == null)
         throw new Exception("Error initializing database connection");
     }
 
-    public static void PersistToken(string name, string email, string token, string secret)
+    private static void CheckDBConn()
     {
       if (connection == null)
         Init();
 
       if (connection.State != ConnectionState.Open)
         connection.Open();
+    }
+
+    public static void PersistToken(string name, string email, string token, string secret)
+    {
+      CheckDBConn();
 
       string exists = null;
       using (OleDbCommand command = connection.CreateCommand())
@@ -46,6 +55,7 @@ namespace HSPI_JJLATITUDE
           var result = command.ExecuteScalar();
           exists = result != null ? result.ToString() : null;
         }
+        catch (Exception) { }
         finally
         {
           command.Dispose();
@@ -80,6 +90,7 @@ namespace HSPI_JJLATITUDE
         {
           command.ExecuteNonQuery();
         }
+        catch (Exception) { }
         finally
         {
           command.Dispose();
@@ -127,6 +138,35 @@ namespace HSPI_JJLATITUDE
         }
       }
       return tokens;
+    }
+
+    public static void PersistPlace(string name, string lat, string lon)
+    {
+      CheckDBConn();
+
+      string sql = "INSERT INTO Places (name, lat, lon) VALUES (?,?,?)";
+
+      using (OleDbCommand command = connection.CreateCommand())
+      {
+        command.CommandText = sql;
+        command.CommandType = CommandType.Text;
+
+        command.Parameters.AddWithValue("@name", name);
+        command.Parameters.AddWithValue("@lat", lat);
+        command.Parameters.AddWithValue("@lon", lon);
+
+        try
+        {
+          command.ExecuteNonQuery();
+        }
+        catch (Exception) { }
+        finally
+        {
+          command.Dispose();
+          connection.Close();
+        }
+      }
+
     }
 
   }

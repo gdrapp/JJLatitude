@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Scheduler;
 using Scheduler.Classes;
-using Microsoft.Win32;
 using System.Threading;
 
 namespace HSPI_JJLATITUDE
@@ -54,15 +52,18 @@ namespace HSPI_JJLATITUDE
         homeSeerPI = hspi;
         HomeSeerApp = (hsapplication)homeSeerPI.GetHSIface();
         log.HomeSeerApp = HomeSeerApp;
+        log.Debug("HomeSeer callback set");
       }
-      catch (Exception ex)
+      catch (Exception)
       {
       }
     }
 
-    private string GetNextFreeDeviceCode(string houseCode)
+    public string GetNextFreeDeviceCode(string houseCode)
     {
       const int MAX_DEVICE_CODE = 99;
+      
+      log.Debug("Getting unused plugin device code");
 
       if (houseCode == null || houseCode.Length != 1)
         return null;
@@ -75,9 +76,9 @@ namespace HSPI_JJLATITUDE
             return i.ToString();
         }
       }
-      catch (Exception ex)
+      catch (Exception)
       {
-
+        log.Warn("Error finding unused plugin device code");
       }
       return null;
     }
@@ -87,25 +88,19 @@ namespace HSPI_JJLATITUDE
     #region "Initialization and Cleanup"
     public void Initialize()
     {
-
-      //InitDB();
-
       //	Now that we have the HomeSeer object, get our devices
       GetHomeSeerDevices();
+
+      // Load Google OAuth tokens from DB
       LoadAuthTokens();
+
+      // Create plugin devices based on the tokens we just loaded
       CreateDevices();
+
+      // Start the thread to update location devices we just created/loaded
       StartLocationFinderThread();
     }
-/*
-    private void InitDB()
-    {
-      String dbLocation = Registry.LocalMachine.OpenSubKey("Software").OpenSubKey("HomeSeer Technologies").OpenSubKey("HomeSeer 2").GetValue("Installdir").ToString();
-      dbLocation += "Data" + "\\" + App.PLUGIN_NAME + "\\" + App.PLUGIN_NAME + ".mdb";
 
-      log.Debug("Initializing database connection");
-      Db.Init(dbLocation);
-    }
-*/
     // Load all devices that belong to the plugin
     private void GetHomeSeerDevices()
     {
@@ -132,7 +127,7 @@ namespace HSPI_JJLATITUDE
           log.Debug("Generating new housecode for plugin: " + this.houseCode);
         }
       }
-      catch (Exception ex)
+      catch (Exception)
       {
 
       }
@@ -143,13 +138,9 @@ namespace HSPI_JJLATITUDE
       try
       {
         log.Debug("Loading authorization tokens");
-        //String dbLocation = Registry.LocalMachine.OpenSubKey("Software").OpenSubKey("HomeSeer Technologies").OpenSubKey("HomeSeer 2").GetValue("Installdir").ToString();
-        //dbLocation += "Data" + "\\" + App.PLUGIN_NAME + "\\" + App.PLUGIN_NAME + ".mdb";
-        //Db.Init(dbLocation);
         accessTokens = Db.GetAccessTokens();
-        //log.Debug("Loaded auth tokens : " + String.Join(":", authTokens.Select(x => String.Format("{0}", x.Value)).ToArray()));
       }
-      catch (Exception ex)
+      catch (Exception)
       {
 
       }
@@ -168,8 +159,9 @@ namespace HSPI_JJLATITUDE
           CreateDevice(String.Format("Accuracy - {0}", token["name"]), "ACC:" + token["id"]);
           CreateDevice(String.Format("Map - {0}", token["name"]), "MAP:" + token["id"]);
           CreateDevice(String.Format("Last Update - {0}", token["name"]), "TIME:" + token["id"]);
+          CreateDevice(String.Format("Nearest Address - {0}", token["name"]), "ADDRESS:" + token["id"]);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
 
         }
@@ -211,12 +203,11 @@ namespace HSPI_JJLATITUDE
 
       try
       {
-        //LatitudeThread latThread = new LatitudeThread(this.HomeSeerApp, this.pluginDevices);
         LatitudeThread latThread = new LatitudeThread();
         locationThread = new Thread(new ThreadStart(latThread.UpdaterThread));
         locationThread.Start();
       }
-      catch (Exception ex)
+      catch (Exception)
       {
 
       }
@@ -234,7 +225,6 @@ namespace HSPI_JJLATITUDE
     #endregion
 
     #region "Misc. methods"
-
     public void UpdateDevice(string iomisc, string status, int value)
     {
       //Update the longitude device

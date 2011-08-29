@@ -10,7 +10,7 @@
 namespace HSPI_JJLATITUDE.Web {
     
     
-    public partial class Maps {
+    public partial class People {
         
         /// <summary>
         /// litHSHeader control.
@@ -56,15 +56,6 @@ namespace HSPI_JJLATITUDE.Web {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnAddAccount;
-        
-        /// <summary>
-        /// TextBox1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TextBox1;
         
         /// <summary>
         /// litHSFooter control.

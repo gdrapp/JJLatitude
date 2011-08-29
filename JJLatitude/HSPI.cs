@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HSPI_JJLATITUDE.Config;
 
 namespace HSPI_JJLATITUDE
 {
@@ -87,13 +88,11 @@ namespace HSPI_JJLATITUDE
       try
       {
         //	Register the config link here
-        object linkConfig = new WebLink("/JJLatitude/Config.aspx", "JJLatitude Config", "JJLatitude Configuration");
+        object linkConfig = new WebLink("/JJLatitude/Config.aspx", App.PLUGIN_NAME + " Config", App.PLUGIN_NAME + " Configuration");
         appInstance.HomeSeerApp.RegisterConfigLink(ref linkConfig, App.PLUGIN_NAME);
-        object linkApp = new WebLink("/JJLatitude/Maps.aspx", App.PLUGIN_NAME, App.PLUGIN_NAME);
-        appInstance.HomeSeerApp.RegisterLinkEx(ref linkApp, App.PLUGIN_NAME);
 
-        //	Tell the app to go find its device
-        //hspiApp.EnableHomeSeerAccess();
+        object linkApp = new WebLink("/JJLatitude/People.aspx", App.PLUGIN_NAME, App.PLUGIN_NAME);
+        appInstance.HomeSeerApp.RegisterLinkEx(ref linkApp, App.PLUGIN_NAME);
       }
       catch (Exception ex)
       {
@@ -123,5 +122,13 @@ namespace HSPI_JJLATITUDE
     {
     }
     #endregion
+
+    #region "Plugin Internal Methods"
+    public void ReloadConfig(string section, string key)
+    {
+      AppConfig.Reload(section, key);
+    }
+    #endregion
+
   }
 }
