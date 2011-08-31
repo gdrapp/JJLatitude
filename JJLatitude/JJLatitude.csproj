@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\jjlatitude.mdb" />
+    <Content Include="Web\Distances.aspx" />
     <Content Include="Web\Places.aspx" />
     <Content Include="Scripts\jquery-1.4.1-vsdoc.js" />
     <Content Include="Scripts\jquery-1.4.1.js" />
@@ -109,6 +110,13 @@
     <Compile Include="oAuth\OAuthProtocolException.cs" />
     <Compile Include="oAuth\OAuthUtils.cs" />
     <Compile Include="oAuth\Tokens.cs" />
+    <Compile Include="Web\Distances.aspx.cs">
+      <DependentUpon>Distances.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\Distances.aspx.designer.cs">
+      <DependentUpon>Distances.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Web\Places.aspx.cs">
       <DependentUpon>Places.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

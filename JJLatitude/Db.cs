@@ -46,7 +46,7 @@ namespace HSPI_JJLATITUDE
       string exists = null;
       using (OleDbCommand command = connection.CreateCommand())
       {
-        command.CommandText = "SELECT id FROM Tokens WHERE email=@email";
+        command.CommandText = "SELECT id FROM People WHERE email=@email";
         command.CommandType = CommandType.Text;
         command.Parameters.Add(new OleDbParameter("@email", email));
 
@@ -65,11 +65,11 @@ namespace HSPI_JJLATITUDE
       string sql = null;
       if (exists != null && exists.Length > 0)
       {
-        sql = "UPDATE [Tokens] SET name=?, token=?, secret=?, insert_time=NOW() WHERE id=?";
+        sql = "UPDATE [People] SET name=?, token=?, secret=?, insert_time=NOW() WHERE id=?";
       }
       else
       {
-        sql = "INSERT INTO Tokens (name, token, secret, email) VALUES (?,?,?,?)";
+        sql = "INSERT INTO People (name, token, secret, email) VALUES (?,?,?,?)";
       }
 
       using (OleDbCommand command = connection.CreateCommand())
@@ -112,7 +112,7 @@ namespace HSPI_JJLATITUDE
 
       using (OleDbCommand command = connection.CreateCommand())
       {
-        command.CommandText = "SELECT id,name,email,token,secret FROM Tokens";
+        command.CommandText = "SELECT id,name,email,token,secret FROM People";
         command.CommandType = CommandType.Text;
 
         try
@@ -139,7 +139,7 @@ namespace HSPI_JJLATITUDE
       }
       return tokens;
     }
-
+    /*
     public static void PersistPlace(string name, string lat, string lon)
     {
       CheckDBConn();
@@ -168,6 +168,6 @@ namespace HSPI_JJLATITUDE
       }
 
     }
-
+    */
   }
 }

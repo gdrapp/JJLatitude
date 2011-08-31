@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HSPI_JJLATITUDE {
+namespace HSPI_JJLATITUDE.Web {
     
     
-    public partial class Places {
+    public partial class Distances {
         
         /// <summary>
         /// litHSHeader control.
@@ -31,67 +31,58 @@ namespace HSPI_JJLATITUDE {
         protected global::System.Web.UI.WebControls.Literal litHSBody;
         
         /// <summary>
-        /// Form1 control.
+        /// form1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm Form1;
+        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
         
         /// <summary>
-        /// txtAddress control.
+        /// lstPeople control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtAddress;
+        protected global::System.Web.UI.WebControls.ListBox lstPeople;
         
         /// <summary>
-        /// txtLat control.
+        /// lstPlaces control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtLat;
+        protected global::System.Web.UI.WebControls.ListBox lstPlaces;
         
         /// <summary>
-        /// txtLon control.
+        /// btnLink control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtLon;
+        protected global::System.Web.UI.WebControls.Button btnLink;
         
         /// <summary>
-        /// txtName control.
+        /// gridDistances control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtName;
+        protected global::System.Web.UI.WebControls.GridView gridDistances;
         
         /// <summary>
-        /// btnSave control.
+        /// dsPeople control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSave;
-        
-        /// <summary>
-        /// gridPlaces control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gridPlaces;
+        protected global::System.Web.UI.WebControls.AccessDataSource dsPeople;
         
         /// <summary>
         /// dsPlaces control.
@@ -101,6 +92,15 @@ namespace HSPI_JJLATITUDE {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.AccessDataSource dsPlaces;
+        
+        /// <summary>
+        /// dsDistances control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.AccessDataSource dsDistances;
         
         /// <summary>
         /// litHSFooter control.

@@ -46,16 +46,17 @@ namespace HSPI_JJLATITUDE
         litHSHeader.Text = HomeSeer.GetHeadContent(homeSeerApp);
         litHSBody.Text = HomeSeer.GetBodyContent(homeSeerApp);
         litHSFooter.Text = HomeSeer.GetFooterContent(homeSeerApp);
+
+        txtName.Text = "";
       }  // (!IsPostBack)
 
-      DB.DataFile = Db.DbPath;
-
-      txtName.Text = "";
+      dsPlaces.DataFile = Db.DbPath;
     }
 
     protected void btnSave_Click(object sender, EventArgs e)
     {
-      Db.PersistPlace(txtName.Text, txtLat.Text, txtLon.Text);
+      //Db.PersistPlace(txtName.Text, txtLat.Text, txtLon.Text);
+      dsPlaces.Insert();
     }
   }
 }

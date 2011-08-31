@@ -7,6 +7,7 @@ using System.Threading;
 
 namespace HSPI_JJLATITUDE
 {
+  [Serializable]
   public class App
   {
     #region "Enums and Constants"
@@ -17,11 +18,12 @@ namespace HSPI_JJLATITUDE
     static private App appInstance = null;
     static private readonly object objLock = new object();
 
-    private clsHSPI homeSeerPI = null;	// Interface to HomeSeer HSPI
-    public hsapplication HomeSeerApp { get; private set; }	// Interface to HomeSeer Application
+    //private clsHSPI homeSeerPI = null;	// Interface to HomeSeer HSPI
+    //public hsapplication HomeSeerApp { get; private set; }	// Interface to HomeSeer Application
+    public HSPI Plugin { get; private set; }
+    //public string HouseCode {get; private set;}
 
-    private string houseCode = null;
-    private Dictionary<string, string> pluginDevices = new Dictionary<string, string>();
+    //private Dictionary<string, string> pluginDevices = new Dictionary<string, string>();
     private List<Dictionary<string, string>> accessTokens;
     private Thread locationThread;
 
@@ -45,7 +47,7 @@ namespace HSPI_JJLATITUDE
     #endregion
 
     #region "HomeSeer access methods"
-    public void SetHomeSeerCallback(clsHSPI hspi)
+   /* public void SetHomeSeerCallback(clsHSPI hspi)
     {
       try
       {
@@ -57,8 +59,20 @@ namespace HSPI_JJLATITUDE
       catch (Exception)
       {
       }
-    }
+    }*/
+    public void SetPluginCallback(HSPI plugin)
+    {
+      try
+      {
+        this.Plugin = plugin;
+      }
+      catch (Exception)
+      {
 
+      }
+
+    }
+    /*
     public string GetNextFreeDeviceCode(string houseCode)
     {
       const int MAX_DEVICE_CODE = 99;
@@ -82,14 +96,14 @@ namespace HSPI_JJLATITUDE
       }
       return null;
     }
-
+    */
     #endregion
 
     #region "Initialization and Cleanup"
     public void Initialize()
     {
       //	Now that we have the HomeSeer object, get our devices
-      GetHomeSeerDevices();
+      // GetHomeSeerDevices();
 
       // Load Google OAuth tokens from DB
       LoadAuthTokens();
@@ -100,7 +114,7 @@ namespace HSPI_JJLATITUDE
       // Start the thread to update location devices we just created/loaded
       StartLocationFinderThread();
     }
-
+    /*
     // Load all devices that belong to the plugin
     private void GetHomeSeerDevices()
     {
@@ -116,15 +130,15 @@ namespace HSPI_JJLATITUDE
           if (deviceClass.@interface.Equals(App.PLUGIN_NAME))
           {
             log.Debug(String.Format("Found device: DC={0}{1} NAME={2} IOMISC={3}", deviceClass.hc, deviceClass.dc, deviceClass.Name, deviceClass.iomisc));
-            this.houseCode = deviceClass.hc;
-            log.Debug("Got plugin housecode: " + this.houseCode);
+            this.HouseCode = deviceClass.hc;
+            log.Debug("Got plugin housecode: " + this.HouseCode);
             this.pluginDevices.Add(deviceClass.iomisc, deviceClass.hc + deviceClass.dc);
           }
         }
-        if (this.houseCode == null)
+        if (this.HouseCode == null)
         {
-          this.houseCode = ((char)homeSeerPI.GetNextFreeIOCode()).ToString();
-          log.Debug("Generating new housecode for plugin: " + this.houseCode);
+          this.HouseCode = ((char)homeSeerPI.GetNextFreeIOCode()).ToString();
+          log.Debug("Generating new housecode for plugin: " + this.HouseCode);
         }
       }
       catch (Exception)
@@ -132,7 +146,7 @@ namespace HSPI_JJLATITUDE
 
       }
     }
-
+    */
     private void LoadAuthTokens()
     {
       try
@@ -149,17 +163,17 @@ namespace HSPI_JJLATITUDE
     private void CreateDevices()
     {
       log.Debug("Creating missing plugin devices");
-      log.Debug("Existing devices:" + String.Join(" ", pluginDevices.Select(x => String.Format("{0}={1}", x.Key, x.Value)).ToArray()));
+      log.Debug("Existing devices:" + String.Join(" ", Plugin.Devices.Select(x => String.Format("{0}={1}", x.Key, x.Value)).ToArray()));
       foreach (var token in accessTokens)
       {
         try
         {
-          CreateDevice(String.Format("Latitude - {0}", token["name"]), "LAT:" + token["id"]);
-          CreateDevice(String.Format("Longitude - {0}", token["name"]), "LON:" + token["id"]);
-          CreateDevice(String.Format("Accuracy - {0}", token["name"]), "ACC:" + token["id"]);
-          CreateDevice(String.Format("Map - {0}", token["name"]), "MAP:" + token["id"]);
-          CreateDevice(String.Format("Last Update - {0}", token["name"]), "TIME:" + token["id"]);
-          CreateDevice(String.Format("Nearest Address - {0}", token["name"]), "ADDRESS:" + token["id"]);
+          Plugin.CreateDevice(String.Format("Latitude - {0}", token["name"]), "LAT:" + token["id"]);
+          Plugin.CreateDevice(String.Format("Longitude - {0}", token["name"]), "LON:" + token["id"]);
+          Plugin.CreateDevice(String.Format("Accuracy - {0}", token["name"]), "ACC:" + token["id"]);
+          Plugin.CreateDevice(String.Format("Map - {0}", token["name"]), "MAP:" + token["id"]);
+          Plugin.CreateDevice(String.Format("Last Update - {0}", token["name"]), "TIME:" + token["id"]);
+          Plugin.CreateDevice(String.Format("Nearest Address - {0}", token["name"]), "ADDRESS:" + token["id"]);
         }
         catch (Exception)
         {
@@ -167,12 +181,12 @@ namespace HSPI_JJLATITUDE
         }
       }
     }
-
-    private void CreateDevice(string name, string iomisc)
+    /*
+    public void CreateDevice(string name, string iomisc)
     {
       if (!this.pluginDevices.ContainsKey(iomisc))
       {
-        string newDC = GetNextFreeDeviceCode(this.houseCode);
+        string newDC = GetNextFreeDeviceCode(this.HouseCode);
         if (newDC != null)
         {
           log.Debug(String.Format("Creating device: {0}", name));
@@ -183,7 +197,7 @@ namespace HSPI_JJLATITUDE
           deviceClass.iotype = HomeSeer.IOTYPE_INPUT;
           deviceClass.iomisc = iomisc;
           deviceClass.dev_type_string = App.PLUGIN_NAME + " Plug-in";
-          deviceClass.hc = this.houseCode;
+          deviceClass.hc = this.HouseCode;
           deviceClass.dc = newDC;
 
           // Add new device to list of devices owned by the plugin
@@ -196,7 +210,7 @@ namespace HSPI_JJLATITUDE
       }
 
     }
-
+    */
     private void StartLocationFinderThread()
     {
       log.Info("Spawning Google Latitude update thread");
@@ -219,31 +233,12 @@ namespace HSPI_JJLATITUDE
 
       locationThread.Abort();
 
-      HomeSeerApp = null;
-      homeSeerPI = null;
+      //HomeSeerApp = null;
+      //homeSeerPI = null;
     }
     #endregion
 
     #region "Misc. methods"
-    public void UpdateDevice(string iomisc, string status, int value)
-    {
-      //Update the longitude device
-      if (pluginDevices.ContainsKey(iomisc))
-      {
-        string deviceCode = pluginDevices[iomisc];
-        if (HomeSeerApp.DeviceExists(deviceCode) != -1)
-          lock (this)
-          {
-            HomeSeerApp.SetDeviceString(deviceCode, status, true);
-            HomeSeerApp.SetDeviceValue(deviceCode, value);
-          }
-      }
-    }
-
-    public void UpdateDevice(string iomisc, string status)
-    {
-      UpdateDevice(iomisc, status, 0);
-    }
     #endregion
   }
 }

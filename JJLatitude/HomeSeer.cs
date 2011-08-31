@@ -73,7 +73,7 @@ namespace HSPI_JJLATITUDE
       {
         header = homeSeerApp.GetPageHeader(App.PLUGIN_NAME, "", "", false, false, true, false, false);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
 
       }
@@ -88,7 +88,7 @@ namespace HSPI_JJLATITUDE
       {
         body = homeSeerApp.GetPageHeader(App.PLUGIN_NAME, "", "", false, false, false, true, false);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
 
       }
@@ -103,7 +103,7 @@ namespace HSPI_JJLATITUDE
       {
         footer = homeSeerApp.GetPageFooter(false);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
 
       }

@@ -15,7 +15,7 @@ namespace HSPI_JJLATITUDE
 
     public LatitudeThread() 
     {
-      log = Log.GetInstance("HSPI_JJLATITUDE.LatitudeThread", app.HomeSeerApp);
+      log = Log.GetInstance("HSPI_JJLATITUDE.LatitudeThread", app.Plugin.HomeSeerApp);
     }
 
     public void UpdaterThread()
@@ -33,27 +33,27 @@ namespace HSPI_JJLATITUDE
 
             // Update the latitude device
             log.Debug("Updating latitude device");
-            app.UpdateDevice("LAT:" + location.TokenID.ToString(), location.Lat.ToString());
+            app.Plugin.UpdateDevice("LAT:" + location.TokenID.ToString(), location.Lat.ToString());
 
             //Update the longitude device
-            log.Debug("Updating longitude plugin device"); 
-            app.UpdateDevice("LON:" + location.TokenID.ToString(), location.Lon.ToString());
+            log.Debug("Updating longitude plugin device");
+            app.Plugin.UpdateDevice("LON:" + location.TokenID.ToString(), location.Lon.ToString());
             
             // Update the accuracy device
             log.Debug("Updating accuracy plugin device");
-            app.UpdateDevice("ACC:" + location.TokenID.ToString(), String.Format("{0} feet", location.Accuracy.ToString()), location.Accuracy);
+            app.Plugin.UpdateDevice("ACC:" + location.TokenID.ToString(), String.Format("{0} feet", location.Accuracy.ToString()), location.Accuracy);
             
             // Update the static map device
             log.Debug("Updating map plugin device");
-            app.UpdateDevice("MAP:" + location.TokenID.ToString(), String.Format("<img src='{0}' />", location.MapUrl));
+            app.Plugin.UpdateDevice("MAP:" + location.TokenID.ToString(), String.Format("<img src='{0}' />", location.MapUrl));
 
             // Update the timestamp device
             log.Debug("Updating timestamp plugin device");
-            app.UpdateDevice("TIME:" + location.TokenID.ToString(), location.Time.ToString());
+            app.Plugin.UpdateDevice("TIME:" + location.TokenID.ToString(), location.Time.ToString());
 
             // Update the nearest address device
             log.Debug("Updating nearest address plugin device");
-            app.UpdateDevice("ADDRESS:" + location.TokenID.ToString(), location.Address);
+            app.Plugin.UpdateDevice("ADDRESS:" + location.TokenID.ToString(), location.Address);
           }
 
           try
